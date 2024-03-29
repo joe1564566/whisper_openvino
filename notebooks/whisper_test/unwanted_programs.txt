@@ -1,0 +1,37 @@
+#divide MP4
+from moviepy.editor import VideoFileClip
+import os
+
+def split_video(input_file, output_dir, duration=120):
+    # 確保輸出目錄存在
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    # 讀取原始影片
+    clip = VideoFileClip(input_file)
+
+    # 計算影片長度（單位：秒）
+    total_duration = clip.duration
+
+    # 切割影片
+    for i in range(0, int(total_duration), duration):
+        # 計算切割起始和結束時間
+        start_time = i
+        end_time = min(i + duration, total_duration)
+
+        # 提取子片段
+        subclip = clip.subclip(start_time, end_time)
+
+        # 生成子片段的文件名
+        output_file = os.path.join(output_dir, f"segment_{start_time}-{end_time}.mp4")
+
+        # 將子片段保存為文件
+        subclip.write_videofile(output_file, codec="libx264")
+
+    # 釋放資源
+    clip.close()
+
+# 使用範例
+input_file = "downloaded_video.mp4"  # 輸入影片文件
+output_dir = "output"  # 輸出目錄
+split_video(input_file, output_dir)
